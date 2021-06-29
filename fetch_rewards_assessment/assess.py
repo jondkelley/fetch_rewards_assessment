@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# boto3==1.17.98
 
 import boto3
 import yaml
@@ -8,11 +7,11 @@ import uuid
 from os import environ
 
 this_uuid = str(uuid.uuid4())
-aws_region = environ.get('aws_region', 'us-east-2')
+aws_region = environ.get('AWS_DEFAULT_REGION', 'us-east-2')
 ec2 = boto3.resource('ec2', region_name=aws_region)
 tag_name = 'jonathankelley'
 
-with open('config.yaml', 'r') as f:
+with open('/config.yaml', 'r') as f:
     try:
         conf = yaml.safe_load(f)['server']
         #print(json.dumps(conf, indent=3))
@@ -87,7 +86,7 @@ groupadd dataoperator
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ssmclient = boto3.Session()
-ssm = ssmclient.client('ssm')
+ssm = ssmclient.client('ssm', region_name=aws_region)
 
 ssm_query = '/aws/service/ami-amazon-linux-latest/{}-ami-{}-{}-gp2'.format(
     conf['ami_type'],
@@ -221,7 +220,7 @@ def get_vm_details():
                 print(f'\tssh {login}@{ipaddr}')
 
 
-if __name__ == "__main__":
+def main():
     # kick off the script parts
     vpc = create_vpc()
     ig = create_igw(vpc)
@@ -229,3 +228,7 @@ if __name__ == "__main__":
     sec_group = create_sg(vpc)
     create_vm(sec_group, subnet)
     get_vm_details()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  fetch_rewards_assessment:
+    build: .
+    environment:
+      - AWS_DEFAULT_REGION=us-east-2
+    container_name: fetch_rewards_assessment
+    volumes:
+    - $HOME/.aws/credentials:/root/.aws/credentials:ro
+    - ./config.yaml:/config.yaml
+    networks:
+      - fetch_net
+
+networks:
+  fetch_net:
+    driver: bridge
